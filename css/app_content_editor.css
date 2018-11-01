@@ -1,0 +1,400 @@
+/* Space out content a bit */
+body {
+  padding-top: 90px;
+  padding-bottom: 20px;
+}
+
+/* Custom page footer */
+.footer {
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+.sticky-top.sticky-offset {
+    top: 50px;	
+}
+
+/* -------------------------------------------------------------------------- */
+/* Navbar element styles. */
+
+.my_photo img,
+#logged-user-avatar {
+    width: 50px;
+    height: 50px;
+    border: 5px solid transparent;
+    background-color: transparent;
+}
+
+#logged-user-avatar:hover {
+	border-color: #d9b628;
+    background-color: #d9b628;
+}
+
+.divider-vertical {
+    height: 40px;
+    margin: 0 9px;
+    border-left: 1px solid #6d6d6d;
+}
+
+.btn.btn-icon {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 0;
+    font-size: 1.25rem;
+    line-height: 1;
+    border-radius: 0;
+}
+
+.btn-icon {
+    background-color: transparent;
+    background-image: none;
+}
+
+.btn.btn-icon-light {
+    color: #f8f9fa;
+}
+
+.btn.btn-icon-light:hover {
+	background-color: #d9b628;
+}
+
+.btn.btn-icon.btn-small {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .5;
+}
+
+.navbar .btn.btn-icon {
+    line-height: 1.5;
+	padding: .1rem .5rem;;
+}
+
+.navbar .document-title-input {
+    display: inline-block;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid transparent;
+    border-radius: 0;
+}
+
+.navbar .document-title-input:hover,
+.navbar .document-title-input:focus {
+    border-color: #d9b628;
+}
+
+.navbar .document-title-input:focus {
+    outline: 0;
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+}
+
+#userDropdownMenu {
+	right: 0; 
+	left: auto;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Styles for document grid view */
+
+.template-grid-container,
+.document-grid-container {
+/*
+	margin: 1rem 0;
+	padding-bottom: 1rem;
+	border-top: 1px solid #a6acb1;
+	border-bottom: 1px solid #a6acb1;
+*/
+	overflow: auto;
+}
+
+/*
+.template-grid-container .card,
+.document-grid-container .card {
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+*/
+
+.template-grid-container .card {
+    width: 140px;
+    height: 180px;
+    overflow: hidden;
+    border-color: #a6acb1!important;
+}
+
+.document-grid-container .card-header,
+.document-grid-container .card-footer,
+.document-grid-container .card-body {
+    padding: 10px;
+}
+
+.document-grid-container .card {
+	width: 200px;
+	height: 260px;
+	overflow: hidden;
+    border-color: #a6acb1!important;
+}
+
+.document-grid-container .card:hover {
+    border-color: #17a2b8!important;
+}
+
+.document-grid-container .title-container,
+.document-grid-container .icon-container {
+    display: inline-block;
+}
+
+.document-grid-container .title-container,
+.document-grid-container .grid-document-title {
+    width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.document-grid-container .icon-container {
+	width: auto;
+    overflow: hidden;
+}
+
+.document-grid-container .document-preview {
+	width: 100%;
+	zoom: 0.5;
+	-ms-zoom: 0.5;
+	-webkit-zoom: 0.5;
+	-moz-transform:  scale(0.6,0.6);
+	-moz-transform-origin: top left;
+}
+
+/* -------------------------------------------------------------------------- */
+
+.table td, .table th {
+	border-color: #a6acb1!important;
+}
+
+
+.table-sm .col-form-label {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.table-sm .form-group.row {
+	margin: 0;
+    padding: 0.25rem;
+	/*
+	border-bottom: 1px solid #a6acb1!important;
+	*/
+}
+
+.permissions-cell hr {
+    margin: 0;
+    border-top: 1px solid #a6acb1;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Fix for stacked bootstrap modals. See https://stackoverflow.com/a/30876481 */
+.modal-backdrop {
+    visibility: hidden !important;
+}
+.modal.show {
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* Define container-sized, extra large modals */
+.modal-xl {
+	max-width: 100%;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { 
+	.modal-xl { 
+	   max-width: 540; 
+	} 
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+	.modal-xl { 
+	   max-width: 720px; 
+   } 
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+	.modal-xl { 
+	   max-width: 960px; 
+    } 
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+	.modal-xl { 
+	   max-width: 1140px; 
+    } 
+}
+
+/* -------------------------------------------------------------------------- */
+/* Styles for contacts selection panel */
+
+#contacts_selection_modal .media {
+    padding: 8px;
+}
+
+#contacts_selection_modal .media.selected {
+    background-color: #ddd;
+}
+
+#contacts_selection_modal .media:hover {
+    /*
+    background-color: #f5f5f5;
+    */
+    cursor: pointer;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Loading styles */
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 100x;
+  height: 100px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #689;
+  border-color: #689 transparent #689 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Not used 
+.new-document-button {
+    border-radius: 24px;
+    content: "";
+    cursor: pointer;
+    display: inline-block;
+    height: 48px;
+    width: 48px;
+    line-height: 48px;
+    opacity: 1;
+    background: #2980b9;
+
+    text-align: center;
+    font-family: icon;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    speak: none;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.new-document-button:before {
+    color: #fff;
+	content: "\e905";
+    transition-property: transform;
+    transition-duration: .1s;
+    transition-timing-function: ease-in;
+}
+
+.new-document-button:hover {
+    background: #2980b9;
+}
+.new-document-button:hover:before {
+    display: inline-block;
+    transform: rotate(-15deg);
+}
+*/
+
+/* -------------------------------------------------------------------------- */
+/* Customise Edit Button for ContentTools - hide edit button */
+
+.ct-ignition {
+    display: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Alignment styles for images, videos and iframes in editable regions */
+
+[data-editable] {
+	/*
+	max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+    */
+    max-width: 100%;
+}
+
+/* Center (default) */
+[data-editable] iframe,
+[data-editable] image,
+[data-editable] [data-ce-tag=img],
+[data-editable] img,
+[data-editable] video {
+    clear: both;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+}
+
+/* Left align */
+[data-editable] .align-left {
+    clear: initial;
+    float: left;
+    margin-right: 0.5em;
+}
+
+/* Right align */
+[data-editable].align-right {
+    clear: initial;
+    float: right;
+    margin-left: 0.5em;
+}
+
+/* Alignment styles for text in editable regions */
+[data-editable] .text-center {
+    text-align: center;
+}
+
+[data-editable] .text-left {
+    text-align: left;
+}
+
+[data-editable] .text-right {
+    text-align: right;
+}
+​

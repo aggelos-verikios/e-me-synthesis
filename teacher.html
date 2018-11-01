@@ -1,0 +1,741 @@
+<!doctype html>
+<html class="no-js" lang="el">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta http-equiv="cache-control" content="no-cache" />
+  <title>e-me · Synthesis</title>
+  <meta name="description" content="Prototype app demonstrating the integration of ContentTools family of libraries to the e-me.edu.gr platform.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/content-tools.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/app_content_editor.css?v=201806242029">
+  <!-- 
+  <link rel="stylesheet" href="https://e-me.edu.gr/s/eme/main/css/libs/bootstrap.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://files.e-me.edu.gr/core/css/styles.css">
+  <link rel="stylesheet" href="https://files.e-me.edu.gr//core/css/apps.css" media="screen">
+   -->
+</head>
+
+<body>
+  <!-- --------------------------------------------------------------------- -->
+  <!-- Top navbar
+  <!-- --------------------------------------------------------------------- -->
+  <nav class="navbar py-0 fixed-top navbar-dark text-light" style="background-color: #3d3d3d;">
+    <div class="container-fluid no-gutters">
+
+        <div class="col-2">
+          <a class="navbar-brand py-0 mr-auto mr-lg-0" href="#/" title="Αρχική">
+            <img src="https://e-me.edu.gr/s/eme/main/img/logo.png" alt="E-me logo" height="45">
+          </a>
+        </div>
+
+        <div class="col-8 text-center">
+          <!-- ko ifnot: inEditPanel -->
+          <h4 class="d-inline">e-me Synthesis</h4>
+          <!-- /ko -->
+
+          <!-- ko if: inEditPanel -->
+            <h5 class="d-inline text-truncate mr-1" data-bind="text: document.title"></h5>
+            <div class="dropdown d-inline">
+              <button class="btn btn-icon btn-icon-light" type="button" data-toggle="dropdown">
+                <i class="far fa-caret-square-down"></i>
+              </button>
+              <div class="dropdown-menu">
+                <!-- ko if: document.userCanManage -->
+                <a class="dropdown-item" href="#rename_modal" data-toggle="modal" data-target="#rename_modal">
+                  <i class="far fa-edit"></i> Μετανομασία
+                </a>
+                <!-- /ko -->
+                <a class="dropdown-item" href="#copy_modal" data-toggle="modal" data-target="#copy_modal" data-bind="click: copyDocumentTitle">
+                  <i class="far fa-copy"></i> Αποθήκευση ως...
+                </a>
+                <!-- ko if: document.userCanManage -->
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#confirm_delete_modal" data-toggle="modal" data-target="#confirm_delete_modal">
+                  <i class="far fa-trash-alt"></i> Διαγραφή
+                </a>
+                <!-- /ko -->
+              </div>
+            </div>
+          <!-- /ko --> <!-- inEditPanel -->
+        </div>
+
+        <div class="col-2">
+          <div class="dropdown float-right">
+            <a href="#" role="button" data-toggle="dropdown">
+              <img id="logged-user-avatar" class="float-left" height="50" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAABCAQAAAA22DU5AAAADklEQVR42mPc/Z+B5gAArHMBvBqRPIsAAAAASUVORK5CYII=">
+            </a>
+            <div id="userDropdownMenu" class="dropdown-menu">
+              <p class="dropdown-item-text">Γεια σου,<br><span id="logged-user-name">logged in user!</span></p>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="https://e-me.edu.gr/logout">Έξοδος</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+  </nav>
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- Content section, varies with templates
+  <!-- --------------------------------------------------------------------- -->
+  <div id="content" class="container app_content_editor" role="main">
+    <div data-bind="template: { name: currentPanel }">
+    </div>
+  </div> <!-- .container -->
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- Knockout templates
+  <!-- --------------------------------------------------------------------- -->
+  <div id="knockout-templates">
+    <script type="text/html" id="app_home">
+      <div id="app-content-home" class="text-center">
+        <h1>e-me Synthesis</h1>
+        <p>Δημιουργήστε ένα <a href="#/" data-bind="click: createDocument">νέο αρχείο</a> ή <a href="#/index">δείτε τα αρχεία σας</a></p>
+      </div>
+    </script>
+  
+    <script type="text/html" id="document_edit">
+      <div id="app-content-editor" class="panel panel-default position-relative" style="border-radius: 0px">
+        <nav class="navbar pt-0 pb-0 navbar-expand-lg sticky-top sticky-offset text-light" style="background-color: #3d3d3d;">
+          <a href="#/index" role="button" class="btn btn-icon btn-icon-light mx-0" title="Αρχική">
+            <i class="fas fa-home"></i>
+          </a>
+      
+          <!-- ko if: showStartEditIcon -->
+          <span class="divider-vertical"></span>
+          <button class="btn btn-icon btn-icon-light mx-0" type="button" data-bind="enable: inEditPanel, click: startEdit" title="Επεξεργασία">
+            <i class="fas fa-pen"></i>
+          </button>
+          <!-- /ko -->
+      
+          <!-- ko if: showStopEditIcons -->
+          <span class="divider-vertical"></span>
+          <button class="btn btn-icon btn-success mx-0" type="button" data-bind="enable: inEditPanel, click: stopEdit" title="Αποθήκευση αλλαγών">
+            <i class="fas fa-check"></i>
+          </button>
+          <span class="divider-vertical"></span>
+          <button class="btn btn-icon btn-danger mx-0" type="button" data-bind="enable: inEditPanel, click: cancelEdit" title="Ακύρωση αλλαγών">
+            <i class="fas fa-times"></i>
+          </button>
+          <!-- /ko -->
+      
+          <span class="divider-vertical"></span>
+          <button class="btn btn-icon btn-icon-light mx-0" type="button" data-toggle="modal" data-target="#document_info_modal" data-bind="click: loadDocumentPermissions" title="Πληροφορίες">
+            <i class="fas fa-info"></i>
+          </button>
+      
+          <span class="divider-vertical"></span>
+          <a href="#editor_help_modal" class="btn btn-icon btn-icon-light mx-0" role="button" title="Βοήθεια" data-toggle="modal" data-target="#editor_help_modal">
+            <i class="fas fa-question"></i>
+          </a>
+        </nav>
+
+        <div class="panel-body">
+          <div data-editable data-name="content" data-bind="html: document.content">
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/html" id="document_info">
+      <!-- Deprecated -->
+    </script>
+
+    <script type="text/html" id="document_index">
+      <ul class="nav nav-tabs" role="tablist">
+        <li>
+          <a class="nav-link" href="#/" title="Νέο έγγραφο" data-bind="click: createDocument">
+            Νέο έγγραφο
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" id="documents-tab" data-toggle="tab" href="#app-content-documents" role="tab" aria-controls="app-content-documents" aria-selected="true">
+            Πρόσφατα έγγραφα
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="templates-tab" data-toggle="tab" href="#app-content-templates" role="tab" aria-controls="app-content-templates" aria-selected="false" data-bind="click: loadTemplates">
+            Πρότυπα
+          </a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane py-3 active" id="app-content-documents" role="tabpanel" aria-labelledby="documents-tab">
+          <a href="#/" role="button" class="btn btn-light" data-bind="click: cycleDocListTemplate">
+            <span data-bind="if: inGridView"><i class="fas fa-th"></i></span>
+            <span data-bind="ifnot: inGridView"><i class="fas fa-bars"></i></span>
+            Αλλαγή προβολής 
+          </a>
+          <div data-bind="template: { name: $root.docListTemplateId }">
+          </div>
+        </div> <!-- #app-content-documents.panel -->
+        <div class="tab-pane py-3" id="app-content-templates" role="tabpanel" aria-labelledby="templates-tab" data-bind="template: 'template_index'">
+        </div> <!-- #app-content-templates.panel -->
+      </div>
+
+    <script type="text/html" id="template_index">
+      <div class="template-grid-container">
+        <p>Επιλέξτε ένα από τα παρακάτω πρότυπα για το έγγραφο σας:</p>
+        <div data-bind="foreach: templates">
+          <div class="card border rounded-0 border-secondary float-left mr-3 mt-3">
+              <div class="card-header bg-transparent small">
+                <strong class="grid-document-title" data-bind="text: title">Template title</strong>
+              </div>
+          </div>
+        </div>
+      </div>
+      <!--
+      <div class="clearfix"></div>
+      <button type="button" class="btn btn-light" onclick="history.back()">Επιστροφή</button>
+      --!>
+    </script>
+
+    <script type="text/html" id="document_index_grid_view">
+      <div class="document-grid-container" data-bind="foreach: documents">
+        <div class="card border rounded-0 border-secondary float-left mr-3 mt-3" data-bind="css: { shared: isShared }">
+
+          <div class="card-header bg-transparent small">
+            <div class="title-container">
+              <strong class="grid-document-title d-block text-gray-dark">
+                <a class="text-gray-dark" data-bind="attr: { href: '#/' + id() + '/edit' }, text: title">
+                </a>
+              </strong>
+              <small><span data-bind="text: modifiedDate"></span>, <span data-bind="text: modifiedTime"></span></small>
+              <small data-bind="if: isShared"> <i class="fas fa-user-friends" title="Κοινόχρηστο έγγραφο"></i></small>
+            </div>
+            <div class="icon-container float-right" data-bind="if: userCanManage">
+              <button type="button" class="btn btn-icon btn-small p-0" data-toggle="modal" data-target="#confirm_delete_modal" data-bind="click: $root.selectedDocument">
+                <i class="far fa-xs fa-trash-alt"></i>
+              </button>
+            </div>
+          </div> <!-- .card-header -->
+
+          <div class="card-body bg-light" style="height: 200px;  overflow:hidden;">
+            <div class="document-preview" data-bind="html: content">
+            </div>
+          </div> <!-- .card-body -->
+
+        </div> <!-- .card -->
+      </div> <!-- foreach: documents -->
+
+      <div class="clearfix"></div>
+    </script>
+
+    <script type="text/html" id="document_index_list_view">
+      <table class="table table-sm table-hover mt-2">
+        <thead>
+          <tr>
+              <th scope="col">Τίτλος</th>
+              <th scope="col" class="text-center">Ημν/ία</th>
+              <th scope="col" class="text-center">Κοινόχρηστο</th>
+              <th scope="col" class="text-center">Ενέργεια</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: documents">
+          <tr>
+            <td>
+              <a data-bind="attr: { href: '#/' + id() + '/edit' }, text: title"></a>
+            </td>
+            <td class="text-center">
+              <small><span data-bind="text: modifiedDate"></span>, <span data-bind="text: modifiedTime"></span></small>
+            </td>
+            <td class="text-center">
+              <small data-bind="if: isShared"> <i class="fas fa-xs fa-user-friends" title="Κοινόχρηστο έγγραφο"></i></small>
+            </td>
+            <td class="text-center" data-bind="if: userCanManage">
+              <button type="button" class="btn btn-icon btn-small p-0" data-toggle="modal" data-target="#confirm_delete_modal" data-bind="click: $root.selectedDocument">
+                <i class="far fa-xs fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </script>
+
+    <script type="text/html" id="invalid_hash">
+      <div id="app-content-invalid-hash">
+        <div class="text-center">
+          <h1>Ουπς!</h1>
+          <img class="img-fluid" src="img/cartoon-bee-1.png">
+          <p>Η διεύθυνση που ακολουθήσατε δεν έχει υλοποιηθεί ακόμα!</p>
+          <p>Παρακαλούμε <a href="#/">επιστρέψτε στην αρχική σελίδα</a>!</p> 
+          <p>...</p>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/html" id="app_help">
+      <div id="app-content-help">
+        <div>
+          <h2>Οδηγίες Χρήσης</h2>
+          <p>
+            Η εφαρμογή Synthesis της Ψηφιακής Εκπαιδευτικής Πλατφόρμας "e-me" είναι ένας κειμενογράφος HTML βασισμένος 
+            στην open-source βιβλιοθήκη <a href="http://getcontenttools.com/">ContentTools</a>.  
+          </p>
+          <p>
+            Η βιβλιοθήκη <a href="http://getcontenttools.com/">ContentTools</a>  
+            επιτρέπει την επεξεργασία κειμένου, πινάκων, βίντεο και άλλων στοιχείων απευθείας στην ίδια τη σελίδα,
+            με λειτουγικότητα και ευκολία χρήσης παρόμοια με αυτή μιας παραδοσιακής εφαρμογής επεξεργασίας κειμένου. 
+          </p>
+          <p>
+            Η εφαρμογή Synthesis ενσωματώνει τα ContentTools στην Ψηφιακή Εκπαιδευτική Πλατφόρμας "e-me",
+            αξιοποιώντας το μοντέλο χρηστών-κυψελών της "e-me" ώστε να παρέχει δυνατότητες κοινής χρήσης
+            και διαμοιρασμού περιεχομένου μεταξύ των χρηστών. 
+          </p>
+          <p>
+            Στις επόμενες παραγράφους παρουσιάζονται τα βασικά στοιχεία της εφαρμογής Synthesis 
+            της Ψηφιακής Εκπαιδευτικής Πλατφόρμας "e-me".
+          </p>
+          <h4>Επεξεργασία</h4>
+          <p>
+            Μόλις πατήσετε το εικονίδιο "μολύβι", μπορείτε να επεξεργαστείτε το έγγραφο και εμφανίζονται δύο
+            νέα στοιχεία στην οθόνη: η <b>εργαλειοθήκη</b> και η <b>μπάρα επίβλεψης</b>. Η εργαλειοθήκη 
+            εμφανίζεται στην πάνω αριστερή γωνία της οθόνης, αλλά μπορείτε να την σύρετε οπουδήποτε θέλετε. 
+            Η μπάρα επίβλεψης εμφανίζεται πάντα στο κάτω μέρος της οθόνης και παραμένει κενή μέχρι
+            να επιλέξετε κάποιο στοιχείο του εγγράφου.
+          </p>
+          <h5>Προσθέτοντας και μεταβάλλοντας περιεχόμενο</h5>
+          <p>
+            Υπάρχουν τρεις τρόποι για να προσθέσετε περιεχόμενο στο έγγραφο: είτε πληκτρολογόντας,
+            είτε πατώντας το πλήκτρο Return κατά την επεξεργασία μιας παραγράφου, είτε χρήσιμοποιώντας 
+            κάποιο από τα εργαλεία της εργαλειοθήκης, όπως για παράδειγμα το εργαλείο εισαγωγής βίντεο.
+          </p>
+          <p>
+            Άλλα εργαλεία επίσης μεταβάλλουν περιεχόμενο, για παράδειγμα αν επιλέξετε μια παράγραφο
+            και κατόπιν πατήσετε το εργαλείο λίστας, η παράγραφος θα μετατραπεί σε λίστα.
+          </p>
+          <h5>Μετακίνηση και τοποθέτηση περιεχομένου</h5>
+          <p>
+            Κάθε καμμάτι περιεχομένου του εγγράφου μπορεί να μετακινηθεί σε άλλη θέση.
+            Τα στοιχεία του εγγράφου που δεν είναι κείμενο, όπως εικόνες και βίντεο,
+            μετακινούνται κάνοντας κλικ στο κέντρο του στοιχείου και σύροντας το
+            στην επιθυμητή θέση.
+          </p>
+          <p>
+            Τα στοιχεία κειμένου (όπως είναι οι παράγραφοι, επικεφαλίδες κλπ) επιλέγονται
+            κάνοντας κλικ παρατεταμένα πάνω στο στοιχείο, μέχρι να εμφανισθεί η σχετική
+            ένδειξη μετακίνησης.     
+          </p>
+          <h5>Αλλαγή μεγέθους εικόνας/βίντεο</h5>
+          <p>
+            Για να αλλάξετε το μέγεθος μιας εικόνας ή ενός βίντεο, κρατήστε πατημένο το ποντίκι
+            σε μια οποιαδήποτε γωνία της εικόνας ή του βίντεο, και κατόπιν σύρετε το ποντίκι
+            ώστε να αλλάξει το μέγεθος.
+          </p>
+          <h5>Διαγραφή περιεχομένου</h5>
+          <p>
+            Ορισμένα στοιχεία διαγράφονται μόνα τους όταν μένουν κενά από περιεχόμενο. 
+            Για παράδειγμα, οι παράγραφοι κειμένου ή οι λίστες διαγράφονται όταν μένουν κενές.
+            Άλλα στοιχεία όπως εικόνες ή βίντεο μπορούν να διαγραφούν είτε πιέζοντας το πλήκτρο delete είτε με την χρήση 
+            του εργαλείου διαγραφής από την εργαλειοθήκη.
+          </p>
+          <p>
+            Το εργαλείο διαγραφής διαγράφει μόνο ένα στοιχείο μιας λίστας ή μια γραμμή ενός πίνακα.
+            Για να διαγράψετε ολόκληρη την λίστα ή όλο τον πίνακα, κρατήστε πατημένο το πλήκτρο CTRL και
+            κατόπιν πατήστε το εργαλείο διαγραφής.
+          </p>
+          
+        </div>
+        <hr>
+        <button type="button" class="btn btn-light" onclick="history.back()">Επιστροφή</button>
+      </div>
+    </script>
+
+    <script type="text/html" id="new_document_title">Νέο έγγραφο</script>
+
+    <script type="text/html" id="new_document_content">
+      <h1>Νέο έγγραφο</h1>
+      <p>Καλώς ορίσατε στο νέο σας έγγραφο.</p>
+      <p>Μπορείτε ελεύθερα να διαγράψετε τα υπάρχοντα και να γράψετε ότι θέλετε, πατώντας το εικονίδιο "μολύβι".</p>
+      <p>Όταν τελειώσετε, πατήστε το εικονίδιο αποδοχής για να αποθηκεύσετε τις αλλαγές σας, ή το κόκκινο ακύρωσης για να τις απορρίψετε.</p>
+    </script>
+  </div>
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- Bootstrap modals section
+  <!-- --------------------------------------------------------------------- -->
+  <div id="modals">
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- Document info modal -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="document_info_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="mb-2 border-bottom border-secondary">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h5 class="modal-title">Πληροφορίες</h5>
+            </div>
+
+            <p>Τίτλος: "<span data-bind="text: document.title"></span>"</p>
+            <p>Μέγεθος: <span data-bind="text: document.size"></span> χαρακτήρες</p>
+
+            <!-- ko if: document.userCanManage -->
+            <h5>Δικαιώματα</h5>
+            <button type="button" class="btn btn-secondary btn-sm" data-bind="enable: document.userCanManage, click: loadContactsAndHives" data-toggle="modal" data-target="#contacts_selection_modal">Προσθήκη</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bind="enable: document.userCanManage, click: saveDocumentPermissions">Αποθήκευση</button>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mt-2" data-bind="with: document">
+                <thead>
+                  <tr class="d-flex">
+                      <th scope="col" class="col-6">Χρήστης / Κυψέλη</th>
+                      <th scope="col" class="col-5 text-center">Δικαιώματα</th>
+                      <th scope="col" class="col-1"></th>
+                  </tr>
+                </thead>
+                <tbody data-bind="foreach: permissions">
+                  <tr class="d-flex">
+                    <td class="col-6">
+                      <span data-bind="text: name"></span>
+                    </td>
+                    <td class="permissions-cell col-5 text-center p-0">
+                      <!-- Hive groups permissions -->
+                      <div  data-bind="if: isHive">
+                        <div class="form-group row">
+                          <label class="col-sm-6 col-form-label">Υπεύθυνοι</label>
+                          <div class="col-sm-6">
+                            <select data-bind="options: $root.permissionOptions, 
+                                               optionsText: 'name',
+                                               optionsValue: 'value',
+                                               value: admins,
+                                               enable: $root.document.userCanManage">
+                            </select>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                          <label class="col-sm-6 col-form-label">Βοηθοί</label>
+                          <div class="col-sm-6">
+                            <select data-bind="options: $root.permissionOptions, 
+                                               optionsText: 'name',
+                                               optionsValue: 'value',
+                                               value: helpers,
+                                               enable: $root.document.userCanManage">
+                            </select>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                          <label class="col-sm-6 col-form-label">Μέλη</label>
+                          <div class="col-sm-6">
+                            <select data-bind="options: $root.permissionOptions, 
+                                               optionsText: 'name',
+                                               optionsValue: 'value',
+                                               value: members,
+                                               enable: $root.document.userCanManage">
+                            </select>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="form-group row">
+                          <label class="col-sm-6 col-form-label">Ακόλουθοι</label>
+                          <div class="col-sm-6">
+                            <select data-bind="options: $root.permissionOptions, 
+                                               optionsText: 'name',
+                                               optionsValue: 'value',
+                                               value: followers,
+                                               enable: $root.document.userCanManage">
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Single user permissions -->
+                      <div data-bind="if: isUser">
+                        <div class="form-group row">
+                          <label class="col-sm-6 col-form-label" data-bind="text: role"></label>
+                          <div class="col-sm-6">
+                            <select data-bind="options: $root.permissionOptions, 
+                                               optionsText: 'name',
+                                               optionsValue: 'value',
+                                               value: pid,
+                                               enable: $root.document.userCanManage">
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-1 text-center">
+                      <button type="button" class="btn btn-icon btn-small p-0" data-bind="click: $root.removePermission">
+                        <i class="far fa-xs fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /ko -->
+    
+          </div> <!-- .modal-body -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm" data-dismiss="modal">Κλείσιμο</button>
+          </div>
+
+        </div>
+      </div>
+    </div> <!-- #document_info_modal -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- Contacts selection modal -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="contacts_selection_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="mb-2 border-bottom border-secondary">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h5 class="modal-title">Επιλέξτε...</h5>
+            </div>
+            <p>
+              <span class="text-secondary">Επιλέξτε από τις παρακάτω επαφές και κυψέλες και πατήστε </span>
+              <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" data-bind="click: addPermissions">Εντάξει</button>
+            </p>
+
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#contacts_tab" role="tab">Χρήστες</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#hives_tab" role="tab">Κυψέλες</a>
+              </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content p-2">
+              <div class="tab-pane active" id="contacts_tab" role="tabpanel">
+                <!-- ko ifnot: hasContacts -->
+                <p>Δεν υπάρχουν διαθέσιμες επαφές για επιλογή.</p>
+                <!-- /ko -->
+                <div data-bind="foreach: contacts">
+                  <div class="media" data-bind="click: $root.toggleSelectContact, css: { 'selected': selected }">
+                    <img height="50" class="border border-secondary mr-3" src="" alt="" data-bind="attr: { src: profile_image }">
+                    <div class="media-body">
+                      <h6 class="mb-0"><span data-bind="text: name"></span> <span data-bind="text: surname"></span></h6>
+                      <small class="text-secondary"><span data-bind="text: userid"></span> (<span data-bind="text: role"></span>)</small>
+                    </div>
+                  </div>
+                  <hr class="my-1">
+                </div>
+              </div>
+
+              <div class="tab-pane" id="hives_tab" role="tabpanel">
+                <!-- ko ifnot: hasHives -->
+                <p>Δεν υπάρχουν διαθέσιμες κυψέλες για επιλογή.</p>
+                <!-- /ko -->
+                <div data-bind="foreach: hives">
+                  <div class="media" data-bind="click: $root.toggleSelectHive, css: { 'selected': selected }">
+                    <img height="50" class="border border-secondary mr-3" src="" alt="" data-bind="attr: { src: group_icon }">
+                    <div class="media-body">
+                      <h6 class="mb-0" data-bind="text: name"></h6>
+                      <small class="text-secondary"><span data-bind="text: members_num"></span> μέλη</small>
+                    </div>
+                  </div>
+                  <hr class="my-1">
+                </div>
+              </div>
+
+            </div> <!-- .tab-content -->
+
+          </div> <!-- .modal-body -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Κλείσιμο</button>
+          </div>
+        </div>
+      </div>
+    </div> <!-- #contacts_selection_modal -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- Rename document -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="rename_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h5 class="modal-title">Μετανομασία</h5>
+            <div class="form-group">
+              <label for="document_title_input">Παρακαλώ εισάγετε ένα νέο όνομα για το έγγραφο</label>
+              <input id="document_title_input" class="form-control" data-bind="value: document.titleCopy">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" data-bind="click: renameDocument">Αποθήκευση</button>
+            <button type="button" class="btn btn-sm" data-dismiss="modal" data-bind="click: undoDocumentTitle">Ακύρωση</button>
+          </div> <!-- .modal-footer -->
+        </div> <!-- .modal-content -->
+      </div>
+    </div> <!-- #rename_modal -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- "Save as" document -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="copy_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h5 class="modal-title">Αποθήκευση αντιγράφου</h5>
+            <div class="form-group">
+              <label for="document_title_input">Παρακαλώ εισάγετε ένα νέο όνομα για το έγγραφο</label>
+              <input id="document_title_input" class="form-control" data-bind="value: document.titleCopy">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" data-bind="click: copyDocument">Αποθήκευση</button>
+            <button type="button" class="btn btn-sm" data-dismiss="modal" data-bind="click: undoDocumentTitle">Ακύρωση</button>
+          </div> <!-- .modal-footer -->
+        </div> <!-- .modal-content -->
+      </div>
+    </div> <!-- #rename_modal -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- Confirm delete document -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="confirm_delete_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-body" data-bind="with: selectedDocument">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h5 class="modal-title">Επιβεβαίωση</h5>
+            <p>Είστε σίγουρος? Το έγγραφο "<span data-bind="text: title"></span>" θα διαγραφεί μόνιμα.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal" data-bind="click: deleteSelectedDocument">Διαγραφή</button>
+            <button type="button" class="btn btn-sm" data-dismiss="modal">Ακύρωση</button>
+          </div> <!-- .modal-footer -->
+        </div> <!-- .modal-content -->
+      </div>
+    </div> <!-- #confirm_delete_modal -->
+
+    <!-- ------------------------------------------------------------------- -->
+    <!-- Editor help -->
+    <!-- ------------------------------------------------------------------- -->
+    <div id="editor_help_modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Χρήση του επεξεργαστή</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" data-bind="with: selectedDocument">
+            <p>
+              Μόλις πατήσετε το εικονίδιο "μολύβι", μπορείτε να επεξεργαστείτε το έγγραφο και εμφανίζονται δύο
+              νέα στοιχεία στην οθόνη: η <b>εργαλειοθήκη</b> και η <b>μπάρα επίβλεψης</b>. Η εργαλειοθήκη 
+              εμφανίζεται στην πάνω αριστερή γωνία της οθόνης, αλλά μπορείτε να την σύρετε οπουδήποτε θέλετε. 
+              Η μπάρα επίβλεψης εμφανίζεται πάντα στο κάτω μέρος της οθόνης και παραμένει κενή μέχρι
+              να επιλέξετε κάποιο στοιχείο του εγγράφου.
+            </p>
+            <h5>Προσθέτοντας και μεταβάλλοντας περιεχόμενο</h5>
+            <p>
+              Υπάρχουν τρεις τρόποι για να προσθέσετε περιεχόμενο στο έγγραφο: είτε πληκτρολογόντας,
+              είτε πατώντας το πλήκτρο Return κατά την επεξεργασία μιας παραγράφου, είτε χρήσιμοποιώντας 
+              κάποιο από τα εργαλεία της εργαλειοθήκης, όπως για παράδειγμα το εργαλείο εισαγωγής βίντεο.
+            </p>
+            <p>
+              Άλλα εργαλεία επίσης μεταβάλλουν περιεχόμενο, για παράδειγμα αν επιλέξετε μια παράγραφο
+              και κατόπιν πατήσετε το εργαλείο λίστας, η παράγραφος θα μετατραπεί σε λίστα.
+            </p>
+            <h5>Μετακίνηση και τοποθέτηση περιεχομένου</h5>
+            <p>
+              Κάθε καμμάτι περιεχομένου του εγγράφου μπορεί να μετακινηθεί σε άλλη θέση.
+              Τα στοιχεία του εγγράφου που δεν είναι κείμενο, όπως εικόνες και βίντεο,
+              μετακινούνται κάνοντας κλικ στο κέντρο του στοιχείου και σύροντας το
+              στην επιθυμητή θέση.
+            </p>
+            <p>
+              Τα στοιχεία κειμένου (όπως είναι οι παράγραφοι, επικεφαλίδες κλπ) επιλέγονται
+              κάνοντας κλικ παρατεταμένα πάνω στο στοιχείο, μέχρι να εμφανισθεί η σχετική
+              ένδειξη μετακίνησης.     
+            </p>
+            <h5>Αλλαγή μεγέθους εικόνας/βίντεο</h5>
+            <p>
+              Για να αλλάξετε το μέγεθος μιας εικόνας ή ενός βίντεο, κρατήστε πατημένο το ποντίκι
+              σε μια οποιαδήποτε γωνία της εικόνας ή του βίντεο, και κατόπιν σύρετε το ποντίκι
+              ώστε να αλλάξει το μέγεθος.
+            </p>
+            <h5>Διαγραφή περιεχομένου</h5>
+            <p>
+              Ορισμένα στοιχεία διαγράφονται μόνα τους όταν μένουν κενά από περιεχόμενο. 
+              Για παράδειγμα, οι παράγραφοι κειμένου ή οι λίστες διαγράφονται όταν μένουν κενές.
+              Άλλα στοιχεία όπως εικόνες ή βίντεο μπορούν να διαγραφούν είτε πιέζοντας το πλήκτρο delete είτε με την χρήση 
+              του εργαλείου διαγραφής από την εργαλειοθήκη.
+            </p>
+            <p>
+              Το εργαλείο διαγραφής διαγράφει μόνο ένα στοιχείο μιας λίστας ή μια γραμμή ενός πίνακα.
+              Για να διαγράψετε ολόκληρη την λίστα ή όλο τον πίνακα, κρατήστε πατημένο το πλήκτρο CTRL και
+              κατόπιν πατήστε το εργαλείο διαγραφής.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm" data-dismiss="modal">Εντάξει</button>
+          </div> <!-- .modal-footer -->
+        </div> <!-- .modal-content -->
+      </div>
+    </div> <!-- #confirm_delete_modal -->
+
+  </div> <!-- #modals -->
+
+  <!-- --------------------------------------------------------------------- -->
+  <!-- Javascripts last -->
+  <!-- --------------------------------------------------------------------- -->
+  <div id="javascripts">  
+    <script src="js/vendor/modernizr-3.6.0.min.js"></script>
+    <!-- 
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>
+    -->
+    <script src="js/cti/jquery-1.11.3.min.js"></script>
+    <script src="js/cti/underscore-min.js"></script>
+    <script src="js/cti/i18next.min.js?v=1"></script>
+    <script src="js/cti/jquery-i18next.min.js?v=1"></script>
+    <script src="js/cti/i18nextLocalStorageCache.min.js?v=1"></script>
+    <script src="js/cti/i18nextXHRBackend.min.js?v=1"></script>
+    <script src="js/cti/i18nextBrowserLanguageDetector.min.js?v=1"></script>
+    <script src="js/cti/load_client_translations.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script src="js/vendor/knockout-3.4.2.js"></script>
+    <script src="js/vendor/knockout.mapping-2.4.1.js"></script>
+    <script src="js/vendor/sammy-0.7.6.min.js"></script>
+    <!-- <script src="js/vendor/content-tools.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/ContentTools@1.6.1/build/content-tools.min.js"></script>
+    <script>
+      // teacher verikiost
+      var logged_user="verikiost";
+      var extusertoken="verikt(24!9g";
+    
+      // student verikioss
+      //var logged_user="verikioss";
+      //var extusertoken= "veriks1!3@*(";
+    </script>
+    <script src="js/app_content_editor.js?v=201806242029"></script>
+  </div>
+</body>
+
+</html>
